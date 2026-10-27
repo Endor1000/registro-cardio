@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Registro Evento Cardiología</title>
+<style>
+  :root{
+    --azul:#1a5fb4;
+    --azul-osc:#103a70;
+    --verde:#2ec27e;
+    --rojo:#e01b24;
+    --gris-bg:#f4f5f7;
+    --gris-borde:#d7dade;
+    --texto:#1b1f24;
+    --texto-sec:#5c6470;
+    --blanco:#ffffff;
+    --radio:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--gris-bg);
+    color:var(--texto);
+    -webkit-tap-highlight-color:transparent;
+  }
+  #app{max-width:720px;margin:0 auto;padding:12px;padding-bottom:90px;}
+  h1,h2,h3{margin:0 0 10px 0;}
+  h1{font-size:19px;}
+  h2{font-size:16px;color:var(--texto-sec);font-weight:600;}
+  .card{
+    background:var(--blanco);
+    border:1px solid var(--gris-borde);
+    border-radius:var(--radio);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  label{display:block;font-size:13px;font-weight:600;color:var(--texto-sec);margin-bottom:6px;}
+  input[type=text],input[type=email],input[type=tel],input[type=password],input[type=number]{
+    width:100%;
+    padding:14px;
+    font-size:17px;
+    border:1.5px solid var(--gris-borde);
+    border-radius:8px;
+    margin-bottom:14px;
+    background:var(--blanco);
+    color:var(--texto);
+  }
+  input:focus{outline:none;border-color:var(--azul);}
+  input.input-error{border-color:var(--rojo);}
+  .btn{
+    display:block;
+    width:100%;
+    padding:16px;
+    font-size:17px;
+    font-weight:700;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:10px;
+  }
+  .btn-primary{background:var(--azul);color:#fff;}
+  .btn-primary:active{background:var(--azul-osc);}
+  .btn-primary:disabled{background:#9db8d8;cursor:not-allowed;}
+  .btn-secundario{background:var(--blanco);color:var(--azul);border:1.5px solid var(--azul);}
+  .btn-link{background:none;border:none;color:var(--azul);font-size:15px;cursor:pointer;padding:8px;text-decoration:underline;}
+  .btn-peligro{background:var(--blanco);color:var(--rojo);border:1.5px solid var(--rojo);}
+  .fila-btns{display:flex;gap:10px;}
+  .fila-btns .btn{margin-bottom:0;}
+  .switch-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 0;margin-bottom:10px;border-top:1px solid var(--gris-borde);border-bottom:1px solid var(--gris-borde);
+  }
+  .switch{position:relative;width:52px;height:30px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;cursor:pointer;inset:0;background:#c6cad1;border-radius:30px;transition:.15s;}
+  .slider:before{position:absolute;content:"";height:24px;width:24px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.15s;}
+  input:checked + .slider{background:var(--verde);}
+  input:checked + .slider:before{transform:translateX(22px);}
+  .aviso{
+    padding:12px 14px;border-radius:8px;margin-bottom:14px;font-size:14px;font-weight:600;
+  }
+  .aviso-error{background:#fdecea;color:#8a1c1c;border:1px solid #f3b4ae;}
+  .aviso-ok{background:#e6f7ee;color:#0d6b3f;border:1px solid #a9e5c4;}
+  .aviso-info{background:#eaf2fb;color:#0d3f73;border:1px solid #b9d4f1;}
+  .top-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 4px;margin-bottom:8px;
+  }
+  .top-bar .quien{font-size:13px;color:var(--texto-sec);}
+  .top-bar .quien b{color:var(--texto);}
+  .tabs{
+    display:flex;gap:6px;background:var(--blanco);border:1px solid var(--gris-borde);
+    border-radius:10px;padding:4px;margin-bottom:14px;position:sticky;top:8px;z-index:5;
+  }
+  .tab-btn{
+    flex:1;padding:10px 6px;text-align:center;border:none;background:none;
+    border-radius:7px;font-size:14px;font-weight:600;color:var(--texto-sec);cursor:pointer;
+  }
+  .tab-btn.activo{background:var(--azul);color:#fff;}
+  .oculto{display:none !important;}
+  .lista-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 0;border-bottom:1px solid var(--gris-borde);gap:10px;
+  }
+  .lista-item:last-child{border-bottom:none;}
+  .li-datos{min-width:0;}
+  .li-nombre{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .li-sub{font-size:12.5px;color:var(--texto-sec);}
+  .li-boleto{
+    font-size:11px;font-weight:700;padding:3px 8px;border-radius:12px;white-space:nowrap;
+  }
+  .li-boleto.si{background:#e6f7ee;color:#0d6b3f;}
+  .li-boleto.no{background:#f0f1f3;color:var(--texto-sec);}
+  .contadores{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+  .contador{
+    flex:1;min-width:120px;background:var(--blanco);border:1px solid var(--gris-borde);
+    border-radius:10px;padding:14px;text-align:center;
+  }
+  .contador .num{font-size:26px;font-weight:800;color:var(--azul);}
+  .contador .lbl{font-size:12px;color:var(--texto-sec);font-weight:600;}
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--gris-borde);}
+  th{color:var(--texto-sec);font-size:12px;}
+  .estado-conexion{
+    position:fixed;top:0;left:0;right:0;text-align:center;font-size:12px;font-weight:700;
+    padding:6px;z-index:50;
+  }
+  .estado-conexion.offline{background:#fdecea;color:#8a1c1c;}
+  .centro{text-align:center;color:var(--texto-sec);padding:20px 0;font-size:14px;}
+  .link-switch{text-align:center;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div id="estado-conexion" class="estado-conexion offline oculto">Sin conexión — tus registros se guardan localmente y se sincronizarán al volver la señal</div>
+
+<div id="app">
+
+  <!-- ===================== PANTALLA LOGIN ===================== -->
+  <div id="pantalla-login" class="oculto">
+    <div class="card" style="margin-top:40px;">
+      <h1>Registro de médicos — Evento Cardiología</h1>
+
+      <div id="form-ingresar">
+        <h2>Iniciar sesión</h2>
+        <div id="aviso-login"></div>
+        <label for="li-correo">Correo</label>
+        <input type="email" id="li-correo" autocomplete="username" />
+        <label for="li-pass">Contraseña</label>
+        <input type="password" id="li-pass" autocomplete="current-password" />
+        <button class="btn btn-primary" id="btn-ingresar">Ingresar</button>
+        <div class="link-switch"><button class="btn-link" id="ir-registro">Soy nuevo, registrarme</button></div>
+      </div>
+
+      <div id="form-registro" class="oculto">
+        <h2>Registrarme como asesor</h2>
+        <div id="aviso-registro"></div>
+        <label for="re-nombre">Tu nombre completo</label>
+        <input type="text" id="re-nombre" />
+        <label for="re-correo">Correo</label>
+        <input type="email" id="re-correo" autocomplete="username" />
+        <label for="re-pass">Contraseña (mínimo 6 caracteres)</label>
+        <input type="password" id="re-pass" autocomplete="new-password" />
+        <label for="re-codigo">Código de acceso del evento</label>
+        <input type="text" id="re-codigo" />
+        <button class="btn btn-primary" id="btn-registrar">Crear cuenta e ingresar</button>
+        <div class="link-switch"><button class="btn-link" id="ir-login">Ya tengo cuenta, iniciar sesión</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PANTALLA APP ===================== -->
+  <div id="pantalla-app" class="oculto">
+    <div class="top-bar">
+      <div class="quien">Asesor: <b id="nombre-asesor-top"></b></div>
+      <button class="btn-link" id="btn-salir">Salir</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn activo" data-tab="capturar">Capturar</button>
+      <button class="tab-btn" data-tab="buscar">Buscar</button>
+      <button class="tab-btn" data-tab="panel">Panel</button>
+    </div>
+
+    <!-- TAB CAPTURAR -->
+    <div id="tab-capturar" class="tab-contenido">
+      <div class="card">
+        <div id="aviso-captura"></div>
+        <label for="c-nombre">Nombre completo</label>
+        <input type="text" id="c-nombre" autocomplete="off" />
+        <label for="c-telefono">Teléfono</label>
+        <input type="tel" id="c-telefono" autocomplete="off" inputmode="numeric" />
+        <label for="c-correo">Correo</label>
+        <input type="email" id="c-correo" autocomplete="off" />
+
+        <div class="switch-row">
+          <label style="margin:0;" for="c-boleto">¿Recibió boleto para la rifa?</label>
+          <label class="switch">
+            <input type="checkbox" id="c-boleto" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="wrap-num-boleto" class="oculto">
+          <label for="c-num-boleto">Número de boleto (1-400, opcional)</label>
+          <input type="number" id="c-num-boleto" min="1" max="400" />
+        </div>
+
+        <button class="btn btn-primary" id="btn-guardar">Guardar registro</button>
+        <button class="btn btn-secundario" id="btn-limpiar">Limpiar</button>
+      </div>
+
+      <div class="card">
+        <h2>Últimos registros (en vivo)</h2>
+        <div id="lista-recientes"></div>
+      </div>
+    </div>
+
+    <!-- TAB BUSCAR -->
+    <div id="tab-buscar" class="tab-contenido oculto">
+      <div class="card">
+        <label for="b-input">Buscar por nombre, teléfono o correo</label>
+        <input type="text" id="b-input" autocomplete="off" />
+        <div id="b-resultados"></div>
+      </div>
+    </div>
+
+    <!-- TAB PANEL -->
+    <div id="tab-panel" class="tab-contenido oculto">
+      <div class="contadores">
+        <div class="contador"><div class="num" id="p-total">0</div><div class="lbl">Médicos registrados</div></div>
+        <div class="contador"><div class="num" id="p-boletos">0/400</div><div class="lbl">Boletos entregados</div></div>
+        <div class="contador"><div class="num" id="p-restantes">400</div><div class="lbl">Boletos restantes</div></div>
+      </div>
+
+      <div id="panel-admin" class="oculto">
+        <div class="card">
+          <h2>Registros por asesor</h2>
+          <table>
+            <thead><tr><th>Asesor</th><th>Registros</th><th>Boletos entregados</th></tr></thead>
+            <tbody id="tabla-asesores"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h2>Exportar</h2>
+          <button class="btn btn-primary" id="btn-exportar">Exportar todo a CSV</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  createUserWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {
+  getFirestore, collection, doc, setDoc, addDoc, getDoc, onSnapshot,
+  serverTimestamp, query, orderBy, enableIndexedDbPersistence
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+// =========================================================================
+// CONFIGURA AQUÍ TU PROYECTO DE FIREBASE
+// (Firebase Console > Configuración del proyecto > Tus apps > SDK setup)
+// =========================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyD2j2eFc6K2Eqbr7RUSfwTQY2_O8xA9vHM",
+  authDomain: "registro-evento-cardiologia.firebaseapp.com",
+  projectId: "registro-evento-cardiologia",
+  storageBucket: "registro-evento-cardiologia.firebasestorage.app",
+  messagingSenderId: "413240123840",
+  appId: "1:413240123840:web:e322311b8713107dbc6825"
+};
+
+// Código que los asesores capturan al auto-registrarse la primera vez.
+// Cámbialo antes del evento. No es un mecanismo de seguridad fuerte
+// (ver README) — solo evita registros accidentales de gente ajena.
+const CODIGO_EVENTO = "CARDIO2026";
+
+const TOTAL_BOLETOS = 400;
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+try {
+  await enableIndexedDbPersistence(db);
+} catch (e) {
+  console.warn("Persistencia offline no disponible (posiblemente otra pestaña abierta):", e.code);
+}
+
+// ---------- Estado en memoria ----------
+let usuarioActual = null; // {uid, nombre, rol}
+let registros = [];       // cache completa, actualizada por onSnapshot
+let unsubRegistros = null;
+
+// ---------- Helpers de validación / normalización ----------
+function normTelefono(t) {
+  return (t || "").replace(/\D/g, "");
+}
+function normCorreo(c) {
+  return (c || "").trim().toLowerCase();
+}
+function telefonoValido(t) {
+  const d = normTelefono(t);
+  return d.length >= 10 && d.length <= 15;
+}
+function correoValido(c) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((c || "").trim());
+}
+function escaparCSV(v) {
+  const s = (v === undefined || v === null) ? "" : String(v);
+  if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+function formatoHora(ts) {
+  if (!ts) return "—";
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+}
+
+// ---------- Elementos ----------
+const el = (id) => document.getElementById(id);
+
+// ---------- Conexión ----------
+window.addEventListener("online", () => el("estado-conexion").classList.add("oculto"));
+window.addEventListener("offline", () => el("estado-conexion").classList.remove("oculto"));
+if (!navigator.onLine) el("estado-conexion").classList.remove("oculto");
+
+// ---------- Navegación login/registro ----------
+el("ir-registro").onclick = () => {
+  el("form-ingresar").classList.add("oculto");
+  el("form-registro").classList.remove("oculto");
+};
+el("ir-login").onclick = () => {
+  el("form-registro").classList.add("oculto");
+  el("form-ingresar").classList.remove("oculto");
+};
+
+function mostrarAviso(idContenedor, texto, tipo) {
+  const c = el(idContenedor);
+  if (!texto) { c.innerHTML = ""; return; }
+  c.innerHTML = `<div class="aviso aviso-${tipo}">${texto}</div>`;
+}
+
+// ---------- Login ----------
+el("btn-ingresar").onclick = async () => {
+  mostrarAviso("aviso-login", "", "info");
+  const correo = el("li-correo").value.trim();
+  const pass = el("li-pass").value;
+  if (!correo || !pass) {
+    mostrarAviso("aviso-login", "Ingresa correo y contraseña.", "error");
+    return;
+  }
+  try {
+    await signInWithEmailAndPassword(auth, correo, pass);
+  } catch (e) {
+    mostrarAviso("aviso-login", "No se pudo ingresar: correo o contraseña incorrectos.", "error");
+  }
+};
+
+// ---------- Registro ----------
+el("btn-registrar").onclick = async () => {
+  mostrarAviso("aviso-registro", "", "info");
+  const nombre = el("re-nombre").value.trim();
+  const correo = el("re-correo").value.trim();
+  const pass = el("re-pass").value;
+  const codigo = el("re-codigo").value.trim();
+
+  if (!nombre) return mostrarAviso("aviso-registro", "Escribe tu nombre.", "error");
+  if (!correoValido(correo)) return mostrarAviso("aviso-registro", "Correo inválido.", "error");
+  if (!pass || pass.length < 6) return mostrarAviso("aviso-registro", "La contraseña debe tener al menos 6 caracteres.", "error");
+  if (codigo !== CODIGO_EVENTO) return mostrarAviso("aviso-registro", "Código de acceso del evento incorrecto.", "error");
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, correo, pass);
+    await setDoc(doc(db, "asesores", cred.user.uid), {
+      nombre,
+      rol: "asesor",
+      creado: serverTimestamp()
+    });
+  } catch (e) {
+    let msg = "No se pudo crear la cuenta.";
+    if (e.code === "auth/email-already-in-use") msg = "Ese correo ya tiene una cuenta. Inicia sesión.";
+    if (e.code === "auth/weak-password") msg = "Contraseña demasiado débil.";
+    mostrarAviso("aviso-registro", msg, "error");
+  }
+};
+
+el("btn-salir").onclick = () => signOut(auth);
+
+// ---------- Cambios de sesión ----------
+onAuthStateChanged(auth, async (user) => {
+  if (unsubRegistros) { unsubRegistros(); unsubRegistros = null; }
+  registros = [];
+
+  if (!user) {
+    usuarioActual = null;
+    el("pantalla-app").classList.add("oculto");
+    el("pantalla-login").classList.remove("oculto");
+    return;
+  }
+
+  // Trae el perfil del asesor (nombre, rol)
+  let perfil;
+  try {
+    const snap = await getDoc(doc(db, "asesores", user.uid));
+    if (!snap.exists()) {
+      mostrarAviso("aviso-login", "Tu cuenta no tiene perfil de asesor asociado. Contacta al administrador.", "error");
+      await signOut(auth);
+      return;
+    }
+    perfil = snap.data();
+  } catch (e) {
+    mostrarAviso("aviso-login", "No se pudo cargar tu perfil (revisa tu conexión).", "error");
+    return;
+  }
+
+  usuarioActual = { uid: user.uid, nombre: perfil.nombre, rol: perfil.rol || "asesor" };
+  el("nombre-asesor-top").textContent = usuarioActual.nombre + (usuarioActual.rol === "admin" ? " (admin)" : "");
+  el("panel-admin").classList.toggle("oculto", usuarioActual.rol !== "admin");
+
+  el("pantalla-login").classList.add("oculto");
+  el("pantalla-app").classList.remove("oculto");
+
+  suscribirRegistros();
+  el("c-nombre").focus();
+});
+
+// ---------- Suscripción en tiempo real a todos los registros ----------
+function suscribirRegistros() {
+  const q = query(collection(db, "registros"), orderBy("timestamp", "desc"));
+  unsubRegistros = onSnapshot(q, (snap) => {
+    registros = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderRecientes();
+    renderPanel();
+    if (!el("tab-buscar").classList.contains("oculto")) renderBusqueda();
+  }, (err) => {
+    console.error("onSnapshot error", err);
+  });
+}
+
+// ---------- Tabs ----------
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo"));
+    btn.classList.add("activo");
+    document.querySelectorAll(".tab-contenido").forEach(t => t.classList.add("oculto"));
+    el("tab-" + btn.dataset.tab).classList.remove("oculto");
+    if (btn.dataset.tab === "buscar") { renderBusqueda(); el("b-input").focus(); }
+  };
+});
+
+// ---------- Captura: navegación con Enter ----------
+el("c-nombre").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); el("c-telefono").focus(); } });
+el("c-telefono").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); el("c-correo").focus(); } });
+el("c-correo").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); intentarGuardar(); } });
+
+el("c-boleto").addEventListener("change", () => {
+  el("wrap-num-boleto").classList.toggle("oculto", !el("c-boleto").checked);
+});
+
+// Aviso de duplicado en vivo mientras se escribe
+el("c-telefono").addEventListener("input", chequearDuplicadoEnVivo);
+el("c-correo").addEventListener("input", chequearDuplicadoEnVivo);
+
+function buscarDuplicado(telefono, correo) {
+  const t = normTelefono(telefono);
+  const c = normCorreo(correo);
+  return registros.find(r =>
+    (t && normTelefono(r.telefono) === t) ||
+    (c && normCorreo(r.correo) === c)
+  );
+}
+
+function chequearDuplicadoEnVivo() {
+  const t = el("c-telefono").value;
+  const c = el("c-correo").value;
+  if (!telefonoValido(t) && !correoValido(c)) {
+    mostrarAviso("aviso-captura", "", "info");
+    return;
+  }
+  const dup = buscarDuplicado(t, c);
+  if (dup) {
+    mostrarAviso(
+      "aviso-captura",
+      `Ya registrado: <b>${dup.nombre}</b> — capturado por ${dup.asesorNombre} a las ${formatoHora(dup.timestamp)}.`,
+      "error"
+    );
+  } else {
+    mostrarAviso("aviso-captura", "", "info");
+  }
+}
+
+el("btn-limpiar").onclick = limpiarFormulario;
+
+function limpiarFormulario() {
+  el("c-nombre").value = "";
+  el("c-telefono").value = "";
+  el("c-correo").value = "";
+  el("c-boleto").checked = false;
+  el("c-num-boleto").value = "";
+  el("wrap-num-boleto").classList.add("oculto");
+  [el("c-nombre"), el("c-telefono"), el("c-correo")].forEach(i => i.classList.remove("input-error"));
+  mostrarAviso("aviso-captura", "", "info");
+  el("c-nombre").focus();
+}
+
+el("btn-guardar").onclick = intentarGuardar;
+
+async function intentarGuardar() {
+  const nombre = el("c-nombre").value.trim();
+  const telefono = el("c-telefono").value.trim();
+  const correo = el("c-correo").value.trim();
+  const tieneBoleto = el("c-boleto").checked;
+  const numBoleto = el("c-num-boleto").value.trim();
+
+  let valido = true;
+  [el("c-nombre"), el("c-telefono"), el("c-correo")].forEach(i => i.classList.remove("input-error"));
+
+  if (!nombre) { el("c-nombre").classList.add("input-error"); valido = false; }
+  if (!telefonoValido(telefono)) { el("c-telefono").classList.add("input-error"); valido = false; }
+  if (!correoValido(correo)) { el("c-correo").classList.add("input-error"); valido = false; }
+
+  if (!valido) {
+    mostrarAviso("aviso-captura", "Revisa los campos marcados: faltan datos o el formato no es válido.", "error");
+    return;
+  }
+
+  const dup = buscarDuplicado(telefono, correo);
+  if (dup) {
+    mostrarAviso("aviso-captura", `No se guardó: ya registrado como <b>${dup.nombre}</b> por ${dup.asesorNombre}.`, "error");
+    return;
+  }
+
+  if (tieneBoleto && numBoleto) {
+    const n = parseInt(numBoleto, 10);
+    const dupBoleto = registros.find(r => r.boleto && String(r.numeroBoleto) === String(n));
+    if (dupBoleto) {
+      mostrarAviso("aviso-captura", `El boleto #${n} ya fue asignado a ${dupBoleto.nombre}.`, "error");
+      return;
+    }
+  }
+
+  el("btn-guardar").disabled = true;
+
+  const payload = {
+    nombre,
+    telefono: normTelefono(telefono),
+    correo: normCorreo(correo),
+    boleto: tieneBoleto,
+    numeroBoleto: (tieneBoleto && numBoleto) ? numBoleto : null,
+    asesorUid: usuarioActual.uid,
+    asesorNombre: usuarioActual.nombre,
+    timestamp: serverTimestamp()
+  };
+
+  try {
+    // addDoc funciona también offline: Firestore lo encola localmente
+    // y lo sincroniza solo al recuperar conexión.
+    await addDoc(collection(db, "registros"), payload);
+    mostrarAviso("aviso-captura", `Guardado: ${nombre}.`, "ok");
+    limpiarFormulario();
+  } catch (e) {
+    console.error(e);
+    mostrarAviso("aviso-captura", "No se pudo guardar. Intenta de nuevo.", "error");
+  } finally {
+    el("btn-guardar").disabled = false;
+  }
+}
+
+// ---------- Lista de recientes (tab Capturar) ----------
+function renderRecientes() {
+  const cont = el("lista-recientes");
+  const ultimos = registros.slice(0, 8);
+  if (ultimos.length === 0) {
+    cont.innerHTML = `<div class="centro">Aún no hay registros hoy.</div>`;
+    return;
+  }
+  cont.innerHTML = ultimos.map(r => `
+    <div class="lista-item">
+      <div class="li-datos">
+        <div class="li-nombre">${escapeHTML(r.nombre)}</div>
+        <div class="li-sub">${r.telefono} · ${formatoHora(r.timestamp)} · ${escapeHTML(r.asesorNombre || "")}</div>
+      </div>
+      <div class="li-boleto ${r.boleto ? 'si' : 'no'}">${r.boleto ? ('Boleto' + (r.numeroBoleto ? ' #' + r.numeroBoleto : '')) : 'Sin boleto'}</div>
+    </div>
+  `).join("");
+}
+
+// ---------- Búsqueda ----------
+el("b-input").addEventListener("input", renderBusqueda);
+function renderBusqueda() {
+  const cont = el("b-resultados");
+  const q = (el("b-input").value || "").trim().toLowerCase();
+  if (!q) { cont.innerHTML = `<div class="centro">Escribe nombre, teléfono o correo para buscar.</div>`; return; }
+  const qTel = normTelefono(q);
+  const resultados = registros.filter(r => {
+    const nombre = (r.nombre || "").toLowerCase();
+    const correo = (r.correo || "").toLowerCase();
+    const tel = r.telefono || "";
+    return nombre.includes(q) || correo.includes(q) || (qTel && tel.includes(qTel));
+  }).slice(0, 50);
+
+  if (resultados.length === 0) {
+    cont.innerHTML = `<div class="centro">Sin coincidencias. Puede registrarse.</div>`;
+    return;
+  }
+  cont.innerHTML = resultados.map(r => `
+    <div class="lista-item">
+      <div class="li-datos">
+        <div class="li-nombre">${escapeHTML(r.nombre)}</div>
+        <div class="li-sub">${r.telefono} · ${escapeHTML(r.correo)} · ${formatoHora(r.timestamp)} · ${escapeHTML(r.asesorNombre || "")}</div>
+      </div>
+      <div class="li-boleto ${r.boleto ? 'si' : 'no'}">${r.boleto ? ('Boleto' + (r.numeroBoleto ? ' #' + r.numeroBoleto : '')) : 'Sin boleto'}</div>
+    </div>
+  `).join("");
+}
+
+// ---------- Panel ----------
+function renderPanel() {
+  const total = registros.length;
+  const conBoleto = registros.filter(r => r.boleto).length;
+  el("p-total").textContent = total;
+  el("p-boletos").textContent = `${conBoleto}/${TOTAL_BOLETOS}`;
+  el("p-restantes").textContent = Math.max(TOTAL_BOLETOS - conBoleto, 0);
+
+  if (usuarioActual && usuarioActual.rol === "admin") {
+    const porAsesor = {};
+    registros.forEach(r => {
+      const k = r.asesorNombre || "—";
+      if (!porAsesor[k]) porAsesor[k] = { total: 0, boletos: 0 };
+      porAsesor[k].total++;
+      if (r.boleto) porAsesor[k].boletos++;
+    });
+    const filas = Object.entries(porAsesor).sort((a, b) => b[1].total - a[1].total);
+    el("tabla-asesores").innerHTML = filas.map(([nombre, d]) => `
+      <tr><td>${escapeHTML(nombre)}</td><td>${d.total}</td><td>${d.boletos}</td></tr>
+    `).join("") || `<tr><td colspan="3">Sin datos aún.</td></tr>`;
+  }
+}
+
+// ---------- Exportar CSV (solo admin) ----------
+el("btn-exportar").onclick = () => {
+  const encabezados = ["nombre", "telefono", "correo", "boleto", "numero_boleto", "asesor", "hora"];
+  const filas = registros.map(r => [
+    r.nombre, r.telefono, r.correo,
+    r.boleto ? "si" : "no",
+    r.numeroBoleto || "",
+    r.asesorNombre || "",
+    r.timestamp ? (r.timestamp.toDate ? r.timestamp.toDate().toLocaleString("es-MX") : "") : ""
+  ]);
+  const csv = [encabezados, ...filas].map(f => f.map(escaparCSV).join(",")).join("\n");
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const fecha = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `registro_cardiologia_${fecha}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+function escapeHTML(s) {
+  return (s || "").toString()
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Pantalla inicial mientras resuelve el estado de auth
+el("pantalla-login").classList.remove("oculto");
+</script>
+</body>
+</html>
